@@ -1,69 +1,207 @@
-# CodeIgniter 4 Application Starter
+# Sistema de Gerenciamento de Tarefas — CodeIgniter 4
 
-## What is CodeIgniter?
+Aplicação web simples para gerenciamento de tarefas, desenvolvida em **PHP** com o framework **CodeIgniter 4**. Também disponibiliza uma **API REST**.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Funcionalidades
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- Cadastrar tarefa (título, descrição e status: `pendente`, `em_andamento`, `concluida`)
+- Listar todas as tarefas
+- Editar tarefa existente
+- Excluir tarefa
+- Validação de formulários (server-side)
+- Proteção contra CSRF e SQL Injection
+- API REST para as mesmas operações (`/api/tasks`)
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Requisitos
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+Antes de começar, você precisa ter instalado:
 
-## Installation & updates
+- PHP >= 8.1
+- Composer
+- MySQL ou PostgreSQL
+- Extensões PHP: `intl`, `mysqli` (ou `pgsql`), `json`
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+## 1. Clonar o repositório
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+```bash
+git clone <url-do-repositorio>
+cd <nome-da-pasta-do-projeto>
+```
 
-## Setup
+## 2. Instalar as dependências
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+```bash
+composer install
+```
 
-## Important Change with index.php
+## 3. Configurar variáveis de ambiente
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Copie o arquivo de exemplo `env` e ajuste as configurações:
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+```bash
+cp env .env
+```
 
-**Please** read the user guide for a better explanation of how CI4 works!
+Edite o arquivo `.env` e configure (Remova o "#" para descomentar):
 
-## Repository Management
+```ini
+CI_ENVIRONMENT = development
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+app.baseURL = 'http://localhost:8080/'
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+database.default.hostname = localhost
+database.default.database = task_organizer
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+```
 
-## Server Requirements
+> Se estiver usando PostgreSQL, altere `DBDriver` para `Postgre` e ajuste a porta para `5432`.
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+## 4. Criar o banco de dados
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+Crie um banco de dados vazio (o nome deve ser igual ao definido em `database.default.database` no `.env`):
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+```sql
+CREATE DATABASE task_organizer;
+```
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## 5. Rodar as migrations
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+A tabela `tasks` é criada automaticamente através da migration incluída no projeto:
+
+```bash
+php spark migrate
+```
+
+Isso criará a tabela `tasks` e alguns mocks com os campos: `id`, `title`, `description`, `status`, `created_at` e `updated_at`.
+
+## 6. Assets (Bootstrap)
+
+As views utilizam arquivos locais do Bootstrap, referenciados em `public/assets/bootstrap/`:
+
+```
+public/assets/bootstrap/bootstrap.min.css
+public/assets/bootstrap/bootstrap.bundle.min.js
+```
+
+## 7. Executar a aplicação
+
+Para rodar o servidor de desenvolvimento embutido do CodeIgniter:
+
+```bash
+php spark serve
+```
+
+A aplicação estará disponível em:
+
+```
+http://localhost:8080
+```
+
+## Rotas da aplicação (Web)
+
+| Método | Rota            | Ação                          |
+|--------|-----------------|-------------------------------|
+| GET    | `/`             | Lista todas as tarefas        |
+| GET    | `/create`       | Formulário de nova tarefa     |
+| POST   | `/submit`       | Salva uma nova tarefa         |
+| GET    | `/edit/{id}`    | Formulário de edição          |
+| POST   | `/update/{id}`  | Atualiza uma tarefa           |
+| GET    | `/delete/{id}`  | Exclui uma tarefa             |
+
+## Rotas da API REST
+
+Todas as rotas abaixo estão sob o prefixo `/api` e retornam JSON. Elas são isentas do filtro CSRF.
+
+| Método | Rota              | Ação                          |
+|--------|-------------------|-------------------------------|
+| GET    | `/api/tasks`      | Lista todas as tarefas        |
+| GET    | `/api/tasks/{id}` | Busca uma tarefa por ID       |
+| POST   | `/api/tasks`      | Cria uma nova tarefa          |
+| PUT    | `/api/tasks/{id}` | Atualiza uma tarefa existente |
+| DELETE | `/api/tasks/{id}` | Exclui uma tarefa             |
+
+### Exemplo de payload (POST/PUT)
+
+```json
+{
+    "title": "Estudar CodeIgniter",
+    "description": "Revisar documentação oficial",
+    "status": "em_andamento"
+}
+```
+
+`status` aceita apenas: `pendente`, `em_andamento` ou `concluida`.
+
+### Testando a API com Postman
+
+1. Abra o Postman e crie uma nova **Collection** (ex.: `Task Organizer API`), ou utilize a **Collection** pronta na pasta `postman/`.
+2. Crie uma requisição para cada rota, conforme a tabela abaixo:
+
+| Nome da requisição   | Método | URL                                   |
+|----------------------|--------|---------------------------------------|
+| Listar tarefas       | GET    | `http://localhost:8080/api/tasks`     |
+| Buscar tarefa por ID | GET    | `http://localhost:8080/api/tasks/1`   |
+| Criar tarefa         | POST   | `http://localhost:8080/api/tasks`     |
+| Atualizar tarefa     | PUT    | `http://localhost:8080/api/tasks/1`   |
+| Excluir tarefa       | DELETE | `http://localhost:8080/api/tasks/1`   |
+
+3. Para as requisições **POST** e **PUT**:
+   - Vá na aba **Body**.
+   - Selecione a opção **raw**.
+   - No dropdown à direita, selecione **JSON**.
+   - Cole o payload de exemplo:
+
+```json
+{
+    "title": "Nova tarefa",
+    "description": "Descrição da tarefa",
+    "status": "pendente"
+}
+```
+
+4. Clique em **Send** e verifique a resposta:
+   - `GET /api/tasks` → retorna todas as tarefas.
+   - `GET /api/tasks/{id}` → retorna a tarefa correspondente ou erro 404 caso não exista.
+   - `POST /api/tasks` → retorna a tarefa criada com status `201 Created`.
+   - `PUT /api/tasks/{id}` → retorna a tarefa atualizada.
+   - `DELETE /api/tasks/{id}` → retorna confirmação de exclusão.
+
+## Estrutura do projeto
+
+```
+app/
+├── Config/
+│   ├── Routes.php        # Definição das rotas web e API
+│   └── Filters.php       # Filtros (CSRF isento para /api/*)
+├── Controllers/
+│   ├── TaskController.php        # CRUD via views (web)
+│   └── Api/
+│       └── TaskController.php    # API REST
+├── Models/
+│   └── TaskModel.php     # Query Builder / Active Record
+├── Database/
+│   └── Migrations/
+│       └── ..._CreateTasksTable.php
+└── Views/
+    ├── layout/
+    │   └── main_layout.php
+    └── tasks/
+        ├── index.php
+        ├── create.php
+        └── edit.php
+postman/
+└── Task_Organizer.postman_collection.json   # Collection pronta para testar a API
+```
+
+## Segurança
+
+- **CSRF**: habilitado globalmente para as rotas web, com exceção de `api/*` (necessário para chamadas de API sem token de formulário).
+- **SQL Injection**: todas as consultas ao banco são feitas via Query Builder / Active Record do CodeIgniter, que utiliza binding de parâmetros.
+- **Validação**: título obrigatório (máx. 255 caracteres) e status restrito à lista `pendente`, `em_andamento`, `concluida`, tanto no formulário web quanto na API.
+
+## Observações
+
+- Os status são armazenados sem acentos e com underscore (`em_andamento`, `concluida`) para evitar problemas de encoding em comparações e URLs, embora sejam exibidos formatados na interface.
