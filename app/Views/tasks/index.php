@@ -28,7 +28,6 @@
                 <tbody>
                     <?php if(!empty($tasks) && is_array($tasks)): ?>
                         <?php foreach($tasks as $task): ?>
-                            <!-- Tiramos o data-bs-toggle do <tr> e colocamos nas <td> individuais -->
                             <tr class="align-middle" style="cursor: pointer;" title="Clique nas informações para expandir/recolher a descrição">
                                 
                                 <td data-bs-toggle="collapse" data-bs-target="#desc-<?= $task['id'] ?>"><?= $task['id'] ?></td>
@@ -52,7 +51,6 @@
                                     <?= date('d/m/Y H:i', strtotime($task['created_at'])) ?>
                                 </td>
                                 
-                                <!-- Esta coluna NÃO tem o collapse, então os botões funcionam normalmente -->
                                 <td class="text-center">
                                     <a href="<?= base_url('/edit/' . $task['id']) ?>" class="btn btn-sm btn-outline-primary">
                                        Editar
@@ -63,8 +61,6 @@
                                     </a>
                                 </td>
                             </tr>
-                            
-                            <!-- Linha oculta com a descrição (Expansível) -->
                             <tr>
                                 <td colspan="5" class="p-0 border-0">
                                     <div class="collapse" id="desc-<?= $task['id'] ?>">

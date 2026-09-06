@@ -15,7 +15,7 @@ class TaskController extends BaseController
         
         $data['tasks'] = $taskModel->findAll();
         
-        return view("index", $data);
+        return view("tasks/index", $data);
     }
 
     public function create(): string
@@ -23,7 +23,7 @@ class TaskController extends BaseController
 
         $data['validation_errors'] = session()->getFlashdata('errors');
 
-        return view("create", $data);
+        return view("tasks/create", $data);
     }
 
     public function submit()
@@ -49,6 +49,7 @@ class TaskController extends BaseController
         ]);
 
         if(!$validation){
+            log_message('error', "Erro de Validação Ocorreu!");
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -77,7 +78,7 @@ class TaskController extends BaseController
         $data['task'] = $task;
         $data['validation_errors'] = session()->getFlashdata('errors');
 
-        return view("edit", $data);
+        return view("tasks/edit", $data);
     }
 
     public function update($id)

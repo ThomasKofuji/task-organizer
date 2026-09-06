@@ -1,12 +1,12 @@
 <?= $this->extend('layout/main_layout') ?>
 <?= $this->section('content') ?>
-<div class="container mt-5 bg-dark text-white rounded-4 d-flex flex-column justify-content-around align-items-center" style="width: 70vw; height: 70vh;">
+<div class="container mt-5 bg-dark text-white rounded-4 d-flex flex-column justify-content-around align-items-center" style="width: 70vw;">
     <div class="row" style="width: 60vw;">
         <div class="col">
 
-            <h1 class="text-center mb-4">Editar Tarefa</h1>
+            <h1 class="text-center mb-4 mt-4">Editar Tarefa</h1>
 
-            <?= form_open_multipart('/update/' . $task['id'], ['novalidate' => true]) ?>
+            <?= form_open('/update/' . $task['id'], ['novalidate' => true]) ?>
 
                 <div class="mb-5">
                     <label for="title" class="form-label">Título *</label>
