@@ -14,6 +14,69 @@ Aplicação web simples para gerenciamento de tarefas, desenvolvida em **PHP** c
 
 ## Requisitos
 
+Você tem duas formas de rodar o projeto: **via Docker** ou **instalação manual** (PHP + Composer + banco local).
+
+---
+
+## Opção 1 — Rodando com Docker (recomendado)
+
+### Requisitos
+
+- Docker
+- Docker Compose
+
+### Passos
+
+1. Clone o repositório:
+
+```bash
+git clone <url-do-repositorio>
+cd <nome-da-pasta-do-projeto>
+```
+
+2. Copie o arquivo de ambiente de exemplo configurado para Docker:
+
+```bash
+cp env.docker.example .env
+```
+
+3. Suba os containers:
+
+```bash
+docker compose up -d --build
+```
+
+Isso vai subir 3 containers:
+
+| Serviço      | Descrição                          | Porta local |
+|--------------|-------------------------------------|-------------|
+| `app`        | Aplicação CodeIgniter (PHP + Apache) | `8080`      |
+| `db`         | Banco de dados MySQL 8               | `3306`      |
+| `phpmyadmin` | Interface web para o banco de dados  | `8081`      |
+
+4. Rode as migrations dentro do container `app` (a instalação do Composer já é feita durante o build da imagem):
+
+```bash
+docker compose exec app php spark migrate
+```
+
+5. Acesse a aplicação:
+
+```
+http://localhost:8080
+```
+
+6. (Opcional) Acesse o phpMyAdmin para visualizar o banco de dados:
+
+```
+http://localhost:8081
+```
+---
+
+## Opção 2 — Instalação manual
+
+## Requisitos
+
 Antes de começar, você precisa ter instalado:
 
 - PHP >= 8.1
