@@ -1,0 +1,59 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: task_organizer_app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - task_organizer_network
+
+  db:
+    image: mysql:8.0
+    container_name: task_organizer_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: task_organizer
+      MYSQL_USER: task_organizer
+      MYSQL_PASSWORD: task_organizer
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - task_organizer_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: task_organizer_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - task_organizer_network
+
+networks:
+  task_organizer_network:
+    driver: bridge
+
+volumes:
+  db_data:
