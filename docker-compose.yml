@@ -9,6 +9,7 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
+      - vendor_data:/var/www/html/vendor
     depends_on:
       db:
         condition: service_healthy
@@ -57,3 +58,4 @@ networks:
 
 volumes:
   db_data:
+  vendor_data:
